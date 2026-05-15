@@ -381,6 +381,9 @@
       box-shadow: 0 4px 22px rgba(31, 58, 46, 0.07);
       position: relative;
       overflow: hidden;
+      transition: outline-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+      outline: 2px dashed transparent;
+      outline-offset: -6px;
     }
     .car-card::before {
       content: '';
@@ -389,23 +392,101 @@
       height: 4px;
       background: linear-gradient(90deg, var(--sunset), var(--sunset-soft));
     }
+    .car-card.is-drop-target {
+      outline-color: var(--sunset);
+      background: var(--cream-warm);
+      transform: translateY(-2px);
+    }
+
+    .car-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.4rem;
+    }
+    .car-image {
+      position: relative;
+      width: 58px;
+      height: 58px;
+      border-radius: 12px;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      background: var(--forest-deep);
+      overflow: hidden;
+      box-shadow: 0 3px 8px rgba(31, 58, 46, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      flex-shrink: 0;
+    }
+    .car-image:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(31, 58, 46, 0.26); }
+    .car-image-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .car-image-fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .car-image-fallback svg { width: 30px; height: 30px; fill: var(--cream); }
+    .car-image-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 2;
+    }
+    .car-image:hover .car-image-overlay,
+    .car-image:focus-visible .car-image-overlay { opacity: 1; }
+    .car-image-overlay svg { width: 20px; height: 20px; fill: var(--cream); }
+    .car-image.is-uploading::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: var(--cream);
+      animation: spin 0.7s linear infinite;
+    }
+
+    .car-header-text {
+      flex: 1;
+      min-width: 0;
+    }
     .car-origin {
       font-family: 'Caveat', cursive;
       color: var(--sunset);
       font-size: 1.2rem;
+      line-height: 1;
       margin-bottom: 0.1rem;
     }
-    .car-name {
+    .car-title {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.9rem;
+      font-size: 1.85rem;
       color: var(--forest-deep);
       letter-spacing: 0.04em;
-      margin-bottom: 1.4rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
+      line-height: 1.05;
+      outline: none;
+      padding: 0.05rem 0.3rem;
+      margin-left: -0.3rem;
+      border-radius: 4px;
+      border-bottom: 1px dashed transparent;
+      cursor: text;
+      word-break: break-word;
+      transition: border-color 0.15s ease, background 0.15s ease;
     }
-    .car-name svg { width: 28px; height: 28px; fill: var(--forest); flex-shrink: 0; }
+    .car-title:hover { border-bottom-color: rgba(45, 82, 64, 0.3); }
+    .car-title:focus { background: var(--cream-warm); border-bottom-color: var(--sunset); }
+
     .car-section-label {
       font-size: 0.7rem;
       text-transform: uppercase;
@@ -421,12 +502,37 @@
       margin-bottom: 1.5rem;
       padding-bottom: 1.5rem;
       border-bottom: 1px dashed rgba(45, 82, 64, 0.2);
+      min-height: 130px;
+    }
+    .car-driver-slot:empty::before {
+      content: 'üres';
+      align-self: center;
+      font-family: 'Caveat', cursive;
+      color: var(--stone-light);
+      font-size: 1.2rem;
     }
     .car-passengers {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
       gap: 1rem 0.6rem;
+      min-height: 70px;
     }
+    .car-passengers:empty {
+      align-items: center;
+      justify-items: center;
+      grid-template-columns: 1fr;
+    }
+    .car-passengers:empty::before {
+      content: 'húzz ide utast';
+      font-family: 'Caveat', cursive;
+      color: var(--stone-light);
+      font-size: 1.1rem;
+    }
+
+    /* drag state */
+    .person { cursor: grab; }
+    .person:active { cursor: grabbing; }
+    .person.is-dragging { opacity: 0.4; }
 
     /* ---------- PERSON CARD ---------- */
     .person {
@@ -1007,7 +1113,7 @@
       </div>
       <div class="section-hint">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2zm-2 19a2 2 0 0 0 4 0h-4z"/></svg>
-        <span>Kattints a profilképre a feltöltéshez, a névre a szerkesztéshez — bárki, bármikor.</span>
+        <span>Kattints a képre / névre a szerkesztéshez · Húzd az embereket egyik autóból a másikba.</span>
       </div>
 
       <div class="cars-grid" id="carsGrid"></div>
@@ -1278,57 +1384,49 @@
     })();
 
     /* =========================================================
-       PROFILES — data + Supabase wiring + UI
+       CARS + PROFILES — data, Supabase wiring, drag-and-drop UI
        ========================================================= */
     (function () {
       const SUPABASE_URL = 'https://vcydfghyvjnjktbvzvzt.supabase.co';
       const SUPABASE_KEY = 'sb_publishable_E6SC2PWqEpRm5HiCRtZP3A_uuEtRYch';
       const AVATAR_BUCKET = 'avatars';
 
-      const PEOPLE = {
-        dominik:   { defaultName: 'Dominik' },
-        keti:      { defaultName: 'Keti' },
-        julcsi:    { defaultName: 'Julcsi' },
-        juhi:      { defaultName: 'Juhi' },
-        bene:      { defaultName: 'Bene' },
-        patrik:    { defaultName: 'Patrik' },
-        csongorka: { defaultName: 'Csongorka' },
-        lizi:      { defaultName: 'Lizi' },
-        bendike:   { defaultName: 'Bendike' },
-        mahu:      { defaultName: 'Mahu' },
-        marton:    { defaultName: 'Marton' },
-        armin:     { defaultName: 'Armin' },
-        kristof:   { defaultName: 'Kristóf', note: 'Veszprémben csatlakozik' },
+      // Static per-person metadata that doesn't live in the DB.
+      const PERSON_META = {
+        kristof: { note: 'Veszprémben csatlakozik' },
       };
 
-      const CARS = [
-        { origin: 'Veszprém', title: 'Dominik kocsija', driver: 'dominik', passengers: ['keti', 'julcsi', 'juhi', 'bene'] },
-        { origin: 'Veszprém', title: 'Patrik kocsija',  driver: 'patrik',  passengers: ['csongorka', 'lizi', 'bendike'] },
-        { origin: 'Budapest', title: 'Mahu wagen',      driver: 'mahu',    passengers: ['marton', 'armin', 'kristof'] },
-      ];
-
-      const cache = {}; // id -> { name, avatar_url }
       const sb = window.supabase
         ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
         : null;
 
-      function nameOf(id)   { return (cache[id] && cache[id].name) || PEOPLE[id].defaultName; }
-      function avatarOf(id) { return (cache[id] && cache[id].avatar_url) || null; }
-      function initialOf(name) { return (name || '').trim().charAt(0).toUpperCase() || '?'; }
+      const profileCache = {}; // id -> { id, name, avatar_url, car_id, role }
+      const carCache = {};     // id -> { id, title, origin, image_url, position }
 
-      /* ---------- DOM rendering ---------- */
+      const nameOf      = (id) => (profileCache[id] && profileCache[id].name) || id;
+      const avatarOf    = (id) => (profileCache[id] && profileCache[id].avatar_url) || null;
+      const roleOf      = (id) => (profileCache[id] && profileCache[id].role) || 'passenger';
+      const carIdOf     = (id) => (profileCache[id] && profileCache[id].car_id) || null;
+      const carTitleOf  = (id) => (carCache[id] && carCache[id].title) || '';
+      const carOriginOf = (id) => (carCache[id] && carCache[id].origin) || '';
+      const carImageOf  = (id) => (carCache[id] && carCache[id].image_url) || null;
+      const initialOf   = (name) => (name || '').trim().charAt(0).toUpperCase() || '?';
 
-      function buildPersonNode(id, isDriver) {
-        const data = PEOPLE[id];
-        const name = nameOf(id);
-        const avatar = avatarOf(id);
+      /* ---------- DOM builders ---------- */
+
+      function buildPersonNode(personId) {
+        const isDriver = roleOf(personId) === 'driver';
+        const meta = PERSON_META[personId] || {};
+        const name = nameOf(personId);
+        const avatar = avatarOf(personId);
 
         const wrapper = document.createElement('div');
         wrapper.className = 'person' + (isDriver ? ' person--driver' : '');
-        wrapper.dataset.person = id;
+        wrapper.dataset.person = personId;
+        wrapper.draggable = true;
 
         wrapper.innerHTML = `
-          <button class="person-avatar" type="button" aria-label="Profilkép cseréje (${name})">
+          <button class="person-avatar" type="button" aria-label="Profilkép cseréje (${name})" draggable="false">
             <img class="person-avatar-img" alt="${name}" ${avatar ? `src="${avatar}"` : 'hidden'}>
             <span class="person-avatar-initials" ${avatar ? 'hidden' : ''}>${initialOf(name)}</span>
             <span class="person-avatar-overlay" aria-hidden="true">
@@ -1338,43 +1436,79 @@
           </button>
           <div class="person-name" contenteditable="true" spellcheck="false">${name}</div>
           ${isDriver ? '<div class="person-role">sofőr</div>' : ''}
-          ${data.note ? `<div class="person-note">${data.note}</div>` : ''}
+          ${meta.note ? `<div class="person-note">${meta.note}</div>` : ''}
         `;
 
-        wireUpPerson(wrapper);
+        wirePerson(wrapper);
         return wrapper;
+      }
+
+      function buildCarNode(carId) {
+        const title = carTitleOf(carId);
+        const origin = carOriginOf(carId);
+        const image = carImageOf(carId);
+
+        const card = document.createElement('div');
+        card.className = 'car-card';
+        card.dataset.car = carId;
+        card.innerHTML = `
+          <div class="car-header">
+            <button class="car-image" type="button" aria-label="Autó képének cseréje (${title})">
+              <img class="car-image-img" alt="${title}" ${image ? `src="${image}"` : 'hidden'}>
+              <span class="car-image-fallback" ${image ? 'hidden' : ''} aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M5 11l1.5-4.5h11L19 11h-2l-.5-1.5h-9L7 11H5zm-1 1h16v6h-2v-2H6v2H4v-6zm3 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
+              </span>
+              <span class="car-image-overlay" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M9 2L7.17 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3.17L15 2H9zm3 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
+              </span>
+              <input class="car-image-input" type="file" accept="image/*" hidden>
+            </button>
+            <div class="car-header-text">
+              <div class="car-origin">${origin}</div>
+              <div class="car-title" contenteditable="true" spellcheck="false">${title}</div>
+            </div>
+          </div>
+          <div class="car-section-label">Sofőr</div>
+          <div class="car-driver-slot" data-zone="driver"></div>
+          <div class="car-section-label">Utasok</div>
+          <div class="car-passengers" data-zone="passenger"></div>
+        `;
+        wireCar(card);
+        return card;
       }
 
       function renderAll() {
         const grid = document.getElementById('carsGrid');
         if (!grid) return;
         grid.innerHTML = '';
-        CARS.forEach((car) => {
-          const card = document.createElement('div');
-          card.className = 'car-card';
-          card.innerHTML = `
-            <div class="car-origin">${car.origin}</div>
-            <div class="car-name">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11l1.5-4.5h11L19 11h-2l-.5-1.5h-9L7 11H5zm-1 1h16v6h-2v-2H6v2H4v-6zm3 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
-              ${car.title}
-            </div>
-            <div class="car-section-label">Sofőr</div>
-            <div class="car-driver-slot"></div>
-            <div class="car-section-label">Utasok</div>
-            <div class="car-passengers"></div>
-          `;
-          card.querySelector('.car-driver-slot').appendChild(buildPersonNode(car.driver, true));
-          const pGrid = card.querySelector('.car-passengers');
-          car.passengers.forEach((pid) => pGrid.appendChild(buildPersonNode(pid, false)));
-          grid.appendChild(card);
+        Object.keys(carCache)
+          .sort((a, b) => (carCache[a].position || 0) - (carCache[b].position || 0))
+          .forEach((carId) => {
+            grid.appendChild(buildCarNode(carId));
+            renderCarPeople(carId);
+          });
+      }
+
+      function renderCarPeople(carId) {
+        const card = document.querySelector(`[data-car="${carId}"]`);
+        if (!card) return;
+        const driverSlot = card.querySelector('.car-driver-slot');
+        const passengers = card.querySelector('.car-passengers');
+        driverSlot.innerHTML = '';
+        passengers.innerHTML = '';
+        const inCar = Object.values(profileCache).filter((p) => p.car_id === carId);
+        inCar.sort((a, b) => a.id.localeCompare(b.id));
+        inCar.forEach((p) => {
+          const node = buildPersonNode(p.id);
+          (p.role === 'driver' ? driverSlot : passengers).appendChild(node);
         });
       }
 
-      function applyProfileToDom(id) {
-        const el = document.querySelector(`[data-person="${id}"]`);
+      function applyProfileToDom(personId) {
+        const el = document.querySelector(`[data-person="${personId}"]`);
         if (!el) return;
-        const name = nameOf(id);
-        const avatar = avatarOf(id);
+        const name = nameOf(personId);
+        const avatar = avatarOf(personId);
 
         const nameEl = el.querySelector('.person-name');
         if (document.activeElement !== nameEl) nameEl.textContent = name;
@@ -1395,9 +1529,35 @@
         el.querySelector('.person-avatar').setAttribute('aria-label', `Profilkép cseréje (${name})`);
       }
 
-      /* ---------- Interaction ---------- */
+      function applyCarToDom(carId) {
+        const card = document.querySelector(`[data-car="${carId}"]`);
+        if (!card) return;
+        const title = carTitleOf(carId);
+        const image = carImageOf(carId);
+        const origin = carOriginOf(carId);
 
-      function wireUpPerson(node) {
+        const titleEl = card.querySelector('.car-title');
+        if (document.activeElement !== titleEl) titleEl.textContent = title;
+        card.querySelector('.car-origin').textContent = origin;
+
+        const img = card.querySelector('.car-image-img');
+        const fb = card.querySelector('.car-image-fallback');
+        if (image) {
+          img.src = image;
+          img.hidden = false;
+          img.alt = title;
+          fb.hidden = true;
+        } else {
+          img.hidden = true;
+          img.removeAttribute('src');
+          fb.hidden = false;
+        }
+        card.querySelector('.car-image').setAttribute('aria-label', `Autó képének cseréje (${title})`);
+      }
+
+      /* ---------- Wire interactions ---------- */
+
+      function wirePerson(node) {
         const id = node.dataset.person;
         const avatarBtn = node.querySelector('.person-avatar');
         const fileInput = node.querySelector('.person-avatar-input');
@@ -1410,11 +1570,16 @@
         fileInput.addEventListener('change', () => {
           const file = fileInput.files && fileInput.files[0];
           fileInput.value = '';
-          if (file) handleAvatarFile(id, file, avatarBtn);
+          if (file) handlePersonAvatarFile(id, file, avatarBtn);
         });
 
+        // Prevent the contenteditable from initiating a drag
+        nameEl.addEventListener('mousedown', () => { node.draggable = false; });
+        nameEl.addEventListener('mouseup',   () => { node.draggable = true; });
+        nameEl.addEventListener('blur',      () => { node.draggable = true; });
+
         nameEl.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') { e.preventDefault(); nameEl.blur(); }
+          if (e.key === 'Enter')  { e.preventDefault(); nameEl.blur(); }
           if (e.key === 'Escape') { e.preventDefault(); nameEl.textContent = nameOf(id); nameEl.blur(); }
         });
         nameEl.addEventListener('paste', (e) => {
@@ -1424,9 +1589,73 @@
         });
         nameEl.addEventListener('blur', () => {
           let name = (nameEl.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 24);
-          if (!name) name = PEOPLE[id].defaultName;
+          if (!name) name = nameOf(id);
           nameEl.textContent = name;
-          if (name !== nameOf(id)) saveName(id, name);
+          if (name !== nameOf(id)) saveProfile(id, { name });
+        });
+
+        // Drag source
+        node.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', id);
+          e.dataTransfer.effectAllowed = 'move';
+          requestAnimationFrame(() => node.classList.add('is-dragging'));
+        });
+        node.addEventListener('dragend', () => {
+          node.classList.remove('is-dragging');
+          document.querySelectorAll('.car-card.is-drop-target')
+            .forEach((c) => c.classList.remove('is-drop-target'));
+        });
+      }
+
+      function wireCar(card) {
+        const id = card.dataset.car;
+        const imageBtn = card.querySelector('.car-image');
+        const fileInput = card.querySelector('.car-image-input');
+        const titleEl = card.querySelector('.car-title');
+
+        imageBtn.addEventListener('click', (e) => {
+          if (e.target === fileInput) return;
+          fileInput.click();
+        });
+        fileInput.addEventListener('change', () => {
+          const file = fileInput.files && fileInput.files[0];
+          fileInput.value = '';
+          if (file) handleCarImageFile(id, file, imageBtn);
+        });
+
+        titleEl.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter')  { e.preventDefault(); titleEl.blur(); }
+          if (e.key === 'Escape') { e.preventDefault(); titleEl.textContent = carTitleOf(id); titleEl.blur(); }
+        });
+        titleEl.addEventListener('paste', (e) => {
+          e.preventDefault();
+          const text = (e.clipboardData || window.clipboardData).getData('text');
+          document.execCommand('insertText', false, text.replace(/\s+/g, ' ').trim());
+        });
+        titleEl.addEventListener('blur', () => {
+          let title = (titleEl.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 40);
+          if (!title) title = carTitleOf(id);
+          titleEl.textContent = title;
+          if (title !== carTitleOf(id)) saveCar(id, { title });
+        });
+
+        // Drop target — accepts the whole card. Zone (driver vs passenger) inferred at drop time.
+        card.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          card.classList.add('is-drop-target');
+        });
+        card.addEventListener('dragleave', (e) => {
+          if (!card.contains(e.relatedTarget)) card.classList.remove('is-drop-target');
+        });
+        card.addEventListener('drop', (e) => {
+          e.preventDefault();
+          card.classList.remove('is-drop-target');
+          const personId = e.dataTransfer.getData('text/plain');
+          if (!personId || !profileCache[personId]) return;
+          const zone = e.target.closest('[data-zone]');
+          const role = zone && zone.dataset.zone === 'driver' ? 'driver' : 'passenger';
+          movePersonToCar(personId, id, role);
         });
       }
 
@@ -1456,66 +1685,158 @@
         });
       }
 
-      async function handleAvatarFile(id, file, avatarBtn) {
-        if (!file.type.startsWith('image/')) return;
-        avatarBtn.classList.add('is-uploading');
-        try {
-          const blob = await fileToSquareJpegBlob(file, 320);
-          await uploadAvatar(id, blob);
-        } catch (err) {
-          console.warn('avatar upload failed', err);
-          alert('A feltöltés nem sikerült. Próbáld újra.');
-        } finally {
-          avatarBtn.classList.remove('is-uploading');
-        }
-      }
-
-      /* ---------- Supabase I/O ---------- */
-
-      async function loadAllProfiles() {
-        if (!sb) return;
-        const { data, error } = await sb.from('profiles').select('id, name, avatar_url');
-        if (error) { console.warn('profiles load failed', error); return; }
-        data.forEach((row) => { cache[row.id] = row; });
-        Object.keys(PEOPLE).forEach(applyProfileToDom);
-      }
-
-      async function saveName(id, name) {
-        if (!sb) return;
-        const prev = cache[id] ? cache[id].name : PEOPLE[id].defaultName;
-        cache[id] = { ...(cache[id] || {}), name };
-        applyProfileToDom(id);
-        const { error } = await sb.from('profiles').update({ name }).eq('id', id);
-        if (error) {
-          console.warn('name save failed', error);
-          cache[id] = { ...(cache[id] || {}), name: prev };
-          applyProfileToDom(id);
-        }
-      }
-
-      async function uploadAvatar(id, blob) {
-        if (!sb) return;
-        const path = `${id}/${Date.now()}.jpg`;
+      async function uploadToAvatars(folder, blob) {
+        const path = `${folder}/${Date.now()}.jpg`;
         const { error: upErr } = await sb.storage
           .from(AVATAR_BUCKET)
           .upload(path, blob, { contentType: 'image/jpeg', cacheControl: '3600', upsert: false });
         if (upErr) throw upErr;
         const { data: pub } = sb.storage.from(AVATAR_BUCKET).getPublicUrl(path);
-        const publicUrl = pub.publicUrl;
-        const { error: dbErr } = await sb.from('profiles').update({ avatar_url: publicUrl }).eq('id', id);
-        if (dbErr) throw dbErr;
-        cache[id] = { ...(cache[id] || {}), avatar_url: publicUrl };
+        return pub.publicUrl;
+      }
+
+      async function handlePersonAvatarFile(id, file, btn) {
+        if (!file.type.startsWith('image/')) return;
+        btn.classList.add('is-uploading');
+        try {
+          const blob = await fileToSquareJpegBlob(file, 320);
+          const url = await uploadToAvatars(`person/${id}`, blob);
+          await saveProfile(id, { avatar_url: url });
+        } catch (err) {
+          console.warn('avatar upload failed', err);
+          alert('A feltöltés nem sikerült. Próbáld újra.');
+        } finally {
+          btn.classList.remove('is-uploading');
+        }
+      }
+
+      async function handleCarImageFile(id, file, btn) {
+        if (!file.type.startsWith('image/')) return;
+        btn.classList.add('is-uploading');
+        try {
+          const blob = await fileToSquareJpegBlob(file, 320);
+          const url = await uploadToAvatars(`car/${id}`, blob);
+          await saveCar(id, { image_url: url });
+        } catch (err) {
+          console.warn('car image upload failed', err);
+          alert('A feltöltés nem sikerült. Próbáld újra.');
+        } finally {
+          btn.classList.remove('is-uploading');
+        }
+      }
+
+      /* ---------- Supabase I/O ---------- */
+
+      async function loadAll() {
+        if (!sb) return;
+        const [cars, profiles] = await Promise.all([
+          sb.from('cars').select('id, title, origin, image_url, position'),
+          sb.from('profiles').select('id, name, avatar_url, car_id, role'),
+        ]);
+        if (cars.error)     { console.warn('cars load failed', cars.error); return; }
+        if (profiles.error) { console.warn('profiles load failed', profiles.error); return; }
+
+        cars.data.forEach((row) => { carCache[row.id] = row; });
+        profiles.data.forEach((row) => { profileCache[row.id] = row; });
+        renderAll();
+      }
+
+      async function saveProfile(id, patch) {
+        if (!sb) return;
+        const prev = { ...(profileCache[id] || {}) };
+        profileCache[id] = { ...prev, ...patch };
         applyProfileToDom(id);
+        const { error } = await sb.from('profiles').update(patch).eq('id', id);
+        if (error) {
+          console.warn('profile save failed', error);
+          profileCache[id] = prev;
+          applyProfileToDom(id);
+        }
+      }
+
+      async function saveCar(id, patch) {
+        if (!sb) return;
+        const prev = { ...(carCache[id] || {}) };
+        carCache[id] = { ...prev, ...patch };
+        applyCarToDom(id);
+        const { error } = await sb.from('cars').update(patch).eq('id', id);
+        if (error) {
+          console.warn('car save failed', error);
+          carCache[id] = prev;
+          applyCarToDom(id);
+        }
+      }
+
+      async function movePersonToCar(personId, carId, role) {
+        if (!sb) return;
+        const prev = { ...(profileCache[personId] || {}) };
+        if (prev.car_id === carId && prev.role === role) return;
+
+        // Optimistic local state
+        const demoted = [];
+        if (role === 'driver') {
+          Object.values(profileCache).forEach((p) => {
+            if (p.car_id === carId && p.role === 'driver' && p.id !== personId) {
+              demoted.push({ id: p.id, prev: { ...p } });
+              profileCache[p.id] = { ...p, role: 'passenger' };
+            }
+          });
+        }
+        profileCache[personId] = { ...prev, car_id: carId, role };
+        if (prev.car_id && prev.car_id !== carId) renderCarPeople(prev.car_id);
+        renderCarPeople(carId);
+
+        try {
+          const ops = [];
+          if (demoted.length > 0) {
+            ops.push(
+              sb.from('profiles')
+                .update({ role: 'passenger' })
+                .eq('car_id', carId)
+                .eq('role', 'driver')
+                .neq('id', personId)
+            );
+          }
+          ops.push(
+            sb.from('profiles')
+              .update({ car_id: carId, role })
+              .eq('id', personId)
+          );
+          const results = await Promise.all(ops);
+          const err = results.find((r) => r.error);
+          if (err) throw err.error;
+        } catch (err) {
+          console.warn('move failed, reverting', err);
+          profileCache[personId] = prev;
+          demoted.forEach(({ id, prev }) => { profileCache[id] = prev; });
+          if (prev.car_id && prev.car_id !== carId) renderCarPeople(prev.car_id);
+          renderCarPeople(carId);
+        }
       }
 
       function subscribeRealtime() {
         if (!sb) return;
-        sb.channel('profiles-feed')
+        sb.channel('trip-feed')
           .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, (payload) => {
             const row = payload.new;
-            if (!row || !PEOPLE[row.id]) return;
-            cache[row.id] = row;
-            applyProfileToDom(row.id);
+            if (!row || !row.id) return;
+            const prev = profileCache[row.id];
+            profileCache[row.id] = row;
+            const moved = !prev || prev.car_id !== row.car_id || prev.role !== row.role;
+            if (moved) {
+              if (prev && prev.car_id) renderCarPeople(prev.car_id);
+              if (row.car_id) renderCarPeople(row.car_id);
+            } else {
+              applyProfileToDom(row.id);
+            }
+          })
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'cars' }, (payload) => {
+            const row = payload.new;
+            if (!row || !row.id) return;
+            const knew = !!carCache[row.id];
+            carCache[row.id] = row;
+            if (knew) applyCarToDom(row.id);
+            else renderAll(); // brand new car
           })
           .subscribe();
       }
@@ -1523,9 +1844,7 @@
       /* ---------- Boot ---------- */
 
       document.addEventListener('DOMContentLoaded', () => {
-        renderAll();
-        loadAllProfiles();
-        subscribeRealtime();
+        loadAll().then(subscribeRealtime);
       });
     })();
   </script>
