@@ -179,7 +179,11 @@
       pointer-events: none;
       z-index: 2;
     }
-    .hero-mountains svg { display: block; width: 100%; height: auto; }
+    .hero-mountains svg {
+      display: block;
+      width: 100%;
+      height: clamp(280px, 46vh, 460px);
+    }
     .mountain-layer-back  { fill: #4f5e6d; }
     .mountain-layer-mid   { fill: #34464f; }
     .mountain-layer-front { fill: #1c2a28; }
@@ -192,7 +196,7 @@
       text-align: center;
       color: var(--snow);
       padding: 0 1.5rem;
-      margin-top: -4rem;
+      margin-top: -14rem;
       isolation: isolate;
     }
     .hero-content::before {
@@ -952,9 +956,9 @@
       <svg viewBox="0 0 1200 400" preserveAspectRatio="none">
         <path class="mountain-layer-back" d="M0,400 L0,260 L80,210 L160,250 L240,180 L320,230 L420,150 L520,220 L620,170 L720,240 L820,190 L920,230 L1020,180 L1120,220 L1200,200 L1200,400 Z"/>
         <path class="mountain-layer-mid" d="M0,400 L0,300 L100,240 L180,290 L260,200 L360,280 L460,180 L560,260 L660,210 L770,290 L880,230 L980,270 L1090,220 L1200,260 L1200,400 Z"/>
-        <path class="mountain-snow" d="M260,200 L240,230 L260,225 L280,235 Z M460,180 L440,210 L460,205 L480,215 Z M660,210 L640,235 L660,230 L680,240 Z M880,230 L860,255 L880,250 L900,260 Z"/>
+        <path class="mountain-snow" d="M260,200 L247,215 L279,215 Z M460,180 L445,195 L479,195 Z M660,210 L630,225 L681,225 Z M880,230 L853,245 L918,245 Z"/>
         <path class="mountain-layer-front" d="M0,400 L0,360 L60,320 L150,350 L250,290 L340,340 L440,260 L560,320 L660,280 L760,340 L870,290 L990,340 L1100,300 L1200,330 L1200,400 Z"/>
-        <path class="mountain-snow" d="M250,290 L235,315 L250,310 L265,318 Z M440,260 L425,285 L440,282 L455,290 Z M660,280 L645,305 L660,300 L675,310 Z M870,290 L855,315 L870,310 L885,318 Z"/>
+        <path class="mountain-snow" d="M250,290 L225,305 L277,305 Z M440,260 L421,275 L470,275 Z M660,280 L623,295 L685,295 Z M870,290 L837,305 L906,305 Z"/>
         <g class="mountain-pine">
           <path d="M30,360 L40,335 L50,360 Z M45,360 L55,330 L65,360 Z M180,365 L188,345 L196,365 Z M380,355 L388,335 L396,355 Z M580,360 L588,340 L596,360 Z M820,358 L828,338 L836,358 Z M1020,365 L1028,345 L1036,365 Z M1150,360 L1158,340 L1166,360 Z"/>
         </g>
