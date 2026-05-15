@@ -808,3 +808,33 @@
         subscribeRealtime();
       });
     })();
+
+    (function countdown() {
+      const targetDateString = 'May 22, 2026 16:00:00';
+      const elementId = 'countdown-timer'
+      const targetDate = new Date(targetDateString).getTime();
+      const element = document.getElementById(elementId);
+
+      if (!element) {
+        // Countdown element is only on the front page; silently skip elsewhere.
+        return;
+      }
+
+      const countdownInterval = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = targetDate - now;
+
+        if (distance < 0) {
+          clearInterval(countdownInterval);
+          element.innerHTML = "A visszaszámlálás lejárt!";
+          return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        element.innerHTML = `${days} nap, ${hours} óra, ${minutes} perc és ${seconds} másodperc múlva kilövés!`;
+      });
+    })();
