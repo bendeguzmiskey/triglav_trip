@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Autók & Költségek — Triglav Túra 2026</title>
+  <meta name="description" content="Autós beosztás (drag-and-drop) és utazási költség-kalkulátor (matrica, üzemanyag) a Triglav Túra 2026-hoz." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏔️%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 L2 21 L22 21 Z M12 8 L17 17 L7 17 Z" fill="currentColor"/></svg>
+        TRIGLAV 2026
+      </a>
+      <button class="nav-toggle" aria-label="Menü" id="navToggle">☰</button>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-back">Főoldal</a></li>
+        <li><a href="#travel">Autók</a></li>
+        <li><a href="#costs">Költségek</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <header class="page-header">
+    <div class="page-header-inner">
+      <span class="page-header-tagline">tervezés &amp; elszámolás</span>
+      <h1>Autók &amp; Költségek</h1>
+      <div class="page-header-sub">ki kivel · ki mennyit fizetett</div>
+    </div>
+    <div class="page-header-mountains" aria-hidden="true">
+      <svg viewBox="0 0 1200 80" preserveAspectRatio="none">
+        <path d="M0,80 L0,55 L120,30 L260,60 L400,25 L540,55 L680,20 L820,50 L960,30 L1080,55 L1200,40 L1200,80 Z" fill="#2d3d3a"/>
+        <path d="M0,80 L0,65 L150,45 L300,70 L450,40 L600,68 L750,38 L900,62 L1050,48 L1200,68 L1200,80 Z" fill="#1f3025" opacity="0.85"/>
+      </svg>
+    </div>
+  </header>
+
+  <!-- TRAVEL -->
+  <section class="block travel" id="travel">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">ki kivel</span>
+        <h2 class="section-title">Utazás &amp; Autós Beosztás</h2>
+        <div class="section-rule"></div>
+      </div>
+      <div class="section-hint">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2zm-2 19a2 2 0 0 0 4 0h-4z"/></svg>
+        <span>Kattints a képre / névre a szerkesztéshez · Húzd az embereket egyik autóból a másikba.</span>
+      </div>
+
+      <div class="cars-grid" id="carsGrid"></div>
+    </div>
+  </section>
+
+  <!-- COSTS -->
+  <section class="block costs" id="costs">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">ki mennyit fizetett</span>
+        <h2 class="section-title">Utazási Költségek</h2>
+        <div class="section-rule"></div>
+      </div>
+      <div class="section-hint">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2zm-2 19a2 2 0 0 0 4 0h-4z"/></svg>
+        <span>A sofőrök bedobják a matrica- és tank-költséget, számla képpel. Az összeget 13 felé osztjuk.</span>
+      </div>
+
+      <div class="cost-summary" id="costSummary"></div>
+
+      <form class="cost-form" id="costForm" autocomplete="off">
+        <h3 class="cost-form-title">Új tétel</h3>
+        <div class="cost-form-grid">
+          <label class="cost-field">
+            <span class="cost-label">Fizető</span>
+            <select name="payer_id" id="costPayer" required></select>
+          </label>
+          <label class="cost-field">
+            <span class="cost-label">Típus</span>
+            <select name="category" id="costCategory" required>
+              <option value="vignette">Autópálya matrica</option>
+              <option value="fuel">Üzemanyag</option>
+            </select>
+          </label>
+          <label class="cost-field">
+            <span class="cost-label">Összeg</span>
+            <div class="cost-amount-wrap">
+              <input type="number" name="amount" id="costAmount" step="0.01" min="0.01" required inputmode="decimal" placeholder="0">
+              <select name="currency" id="costCurrency">
+                <option value="EUR">€</option>
+                <option value="HUF">Ft</option>
+              </select>
+            </div>
+          </label>
+          <label class="cost-field">
+            <span class="cost-label">Megjegyzés (opcionális)</span>
+            <input type="text" name="note" id="costNote" maxlength="80" placeholder="pl. Tankolás Vrhnika-nál">
+          </label>
+          <div class="cost-field cost-field--full">
+            <span class="cost-label">Számla kép (opcionális)</span>
+            <button type="button" class="cost-receipt-btn" id="costReceiptBtn">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 7h-3V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zm-9-2h4v2h-4V5zm9 14H5V9h14v10zm-7-2a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg>
+              <span id="costReceiptLabel">Kép kiválasztása</span>
+            </button>
+            <img class="cost-receipt-preview" id="costReceiptPreview" hidden alt="">
+            <input type="file" id="costReceiptInput" accept="image/*" hidden>
+          </div>
+          <p class="cost-form-error" id="costFormError" aria-live="polite"></p>
+          <div class="cost-field cost-field--full cost-actions">
+            <button type="submit" class="cost-submit" id="costSubmit">Hozzáadás</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="cost-list" id="costList"></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-mountains" aria-hidden="true">
+      <svg viewBox="0 0 1200 80" preserveAspectRatio="none">
+        <path d="M0,80 L0,40 L150,10 L300,50 L450,20 L600,55 L750,15 L900,50 L1050,25 L1200,55 L1200,80 Z" fill="#2d5240"/>
+      </svg>
+    </div>
+    <div class="footer-content">
+      <div class="footer-title">Triglav Adventure 2026</div>
+      <div class="footer-sub">irány a hegyek</div>
+      <div class="footer-line"></div>
+      <div class="footer-small">találkozunk a tetőn — 2026. május</div>
+    </div>
+  </footer>
+
+  <!-- Receipt lightbox -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-hidden="true">
+    <img class="lightbox-img" id="lightboxImg" alt="Számla kép">
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
