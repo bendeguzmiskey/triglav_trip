@@ -1,0 +1,9 @@
+.DS_Store
+.idea/
+.vscode/
+node_modules/
+
+# local Claude/MCP overrides (keep .mcp.json shared, only env-resolved secrets)
+.claude/settings.local.json
+.env
+.env.local
